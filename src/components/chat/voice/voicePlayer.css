@@ -1,0 +1,35 @@
+.voice-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(145deg,rgb(164, 164, 232),rgb(164, 164, 232));
+  max-width: 300px;
+  margin-top: 6px;
+  border-radius: 12px;
+  transition: box-shadow 0.3s ease;
+  padding:5px;
+}
+
+.voice-player:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.voice-player audio {
+  width: 220px;
+  height: 32px;
+  outline: none;
+  border-radius: 12px;
+  background-color: transparent;
+}
+
+.voice-player audio::-webkit-media-controls-panel {
+  background-color:rgb(164, 164, 232);
+  color: white;
+  border-radius: 12px;
+}
+
+.voice-player audio::-webkit-media-controls-play-button,
+.voice-player audio::-webkit-media-controls-timeline,
+.voice-player audio::-webkit-media-controls-time-remaining-display {
+  filter: brightness(1.3);
+}

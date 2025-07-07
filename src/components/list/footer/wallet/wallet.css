@@ -1,0 +1,97 @@
+/* Overlay */
+.wallet-overlay {
+    bottom:0;
+    right:0;
+    top: 0;
+    left: 0;
+    width: max-content;
+    height: max-content;
+    position:absolute;
+    background-color: rgba(0, 0, 0, 0.5); /* dark semi-transparent background */
+    display: flex;
+    margin:auto;
+}
+
+/* Container */
+.wallet-container {
+    background: linear-gradient(135deg, #ffffff, #f9f9f9);
+    padding: 30px 25px;
+    border-radius: 16px;
+    width: 360px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.5s ease;
+}
+
+/* Animation */
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Title */
+.wallet-title {
+    text-align: center;
+    color: #333;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Form Group */
+.wallet-form-group {
+    margin-bottom: 15px;
+}
+
+/* Labels */
+.wallet-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Inputs */
+.wallet-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: border 0.3s;
+}
+
+.wallet-input:focus {
+    border: 1px solid #4CAF50;
+    outline: none;
+}
+
+/* Row (for expiry + cvv) */
+.wallet-form-row {
+    display: flex;
+    gap: 10px;
+}
+
+/* Half-width Inputs */
+.half-width {
+    width: 50%;
+}
+
+/* Button */
+.wallet-button {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #4CAF50;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.wallet-button:hover {
+    background-color: #45a049;
+}

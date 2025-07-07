@@ -1,0 +1,43 @@
+.userInfo1 {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .userInfo1 .user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .userInfo1 .user img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .userInfo1 .icon {
+    display: flex;
+    gap: 20px;
+  }
+  .session-icon {
+    font-size: 1.5rem;
+    color:rgb(145, 164, 185);
+    cursor: pointer;
+    margin-right: 10px;
+    transition: transform 0.2s ease;
+  }
+  
+  .session-icon:hover {
+    transform: scale(1.2);
+    color: #2b6cb0;
+  }
+  
+  .userInfo1 .icon img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  

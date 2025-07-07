@@ -1,0 +1,47 @@
+.admin-notes-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-notes-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .notes-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .note-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    transition: box-shadow 0.3s;
+  }
+  
+  .note-card:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  }
+  
+  .note-text {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 10px;
+  }
+  
+  .note-meta {
+    font-size: 14px;
+    color: #777;
+    display: flex;
+    justify-content: space-between;
+  }
+  

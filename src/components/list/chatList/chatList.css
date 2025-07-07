@@ -1,0 +1,92 @@
+.chatList {
+    flex: 1;
+    overflow: auto; /* Enables vertical scrolling only if needed */
+    overflow-x: hidden; /* Prevents horizontal scroll */
+  }
+  
+  .chatList .search {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .chatList .search .searchBar {
+    flex: 1;
+    background-color: rgba(17, 25, 40, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .item.selected {
+  background-color:rgba(84, 93, 101, 0.21);
+  color: white;
+}
+.divider {
+  margin: 5px 0;
+  border: none;
+  height: 1px;
+  background-color: #ccc;
+}
+
+  .chatList .search .searchBar input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: white; /* Add this to make input text visible if background is dark */
+  }
+  
+  .chatList .search .searchBar img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .chatList .search .add {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(17, 25, 40, 0.5);
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .chatList .item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #dddddd35;
+    transition: background-color 0.3s ease;
+  }
+  
+  .chatList .item:hover {
+    background-color: rgba(17, 25, 40, 0.3); /* Optional hover effect */
+  }
+  
+  .chatList .item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .chatList .item .texts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .chatList .item .texts span {
+    font-weight: 500;
+    color: white; /* or any suitable color */
+  }
+  
+  .chatList .item .texts p {
+    font-size: 14px;
+    font-weight: 300;
+    color: #ccc; /* light gray for message text */
+  }
+  

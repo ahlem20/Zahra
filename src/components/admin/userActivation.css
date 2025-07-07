@@ -1,0 +1,88 @@
+/* Global Scrollable Wrapper */
+.table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  /* Main Container */
+  .user-activation,
+  .activation-container {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  
+  /* Header */
+  .user-activation h2,
+  .activation-container h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #fff;
+    font-size: 1.8rem;
+  }
+  
+  /* Table Base */
+  .user-table,
+  .activation-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    background-color: #1e1e2f;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* Table Head */
+  .user-table th,
+  .activation-table th {
+    padding: 12px 16px;
+    background-color: #0e3c6e;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 2px solid #ccc;
+    white-space: nowrap;
+  }
+  
+  /* Table Body */
+  .user-table td,
+  .activation-table td {
+    padding: 10px 14px;
+    border: 1px solid #444;
+    text-align: center;
+    vertical-align: middle;
+    color: #fff;
+    background-color: #2c2c3b;
+  }
+  
+  /* Button */
+  .activate-btn {
+    background-color: #2b7cff;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .activate-btn:hover {
+    background-color: #1a5ed1;
+  }
+  
+  /* Images */
+  .user-table img,
+  .activation-table img {
+    max-width: 60px;
+    max-height: 60px;
+    border-radius: 5px;
+    object-fit: cover;
+    border: 2px solid #ccc;
+  }
+  

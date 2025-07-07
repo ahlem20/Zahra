@@ -1,0 +1,40 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+      "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  }
+  
+  /* Background Video Styling */
+  #bgVideo {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    object-fit: cover;
+  }
+  
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    height: 100vh;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: row;
+    width: 90vw;
+    height: 90vh;
+    background-color: rgba(17, 25, 40, 0.36);
+    backdrop-filter: blur(19px) saturate(180%);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    position: relative;
+    z-index: 1; /* above the video */
+  }
+  
