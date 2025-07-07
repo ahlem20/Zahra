@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./UserActivation.css";
+import "./userActivation.css";
 
 const UserActivation = () => {
   const [groupedUsers, setGroupedUsers] = useState({});
