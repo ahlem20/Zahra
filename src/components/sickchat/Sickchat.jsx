@@ -1,6 +1,6 @@
 import Detail1 from "./detail1/Detail1";
 import Chat from "../chat/Chat";
-import List from "../list/list";
+import List from "../list/List";
 
 const App = () => {
   return (
