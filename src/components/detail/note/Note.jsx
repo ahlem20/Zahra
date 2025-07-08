@@ -24,7 +24,7 @@ const Note = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:3500/note/${isGroup ? "group" : "conversation"}/${id}`
+          `https://zahrabackend.onrender.com/note/${isGroup ? "group" : "conversation"}/${id}`
         );
         setNotes(res.data);
       } catch (err) {
@@ -41,10 +41,10 @@ const Note = () => {
 
     try {
       if (editId) {
-        await axios.patch(`http://localhost:3500/note/${editId}`, { text: input });
+        await axios.patch(`https://zahrabackend.onrender.com/note/${editId}`, { text: input });
         setEditId(null);
       } else {
-        await axios.post("http://localhost:3500/note", {
+        await axios.post("https://zahrabackend.onrender.com/note", {
           text: input,
           userId,
           ...(isGroup ? { groupId } : { conversationId }),
@@ -58,7 +58,7 @@ const Note = () => {
 
         try {
           const res = await axios.get(
-            `http://localhost:3500/note/${isGroup ? "group" : "conversation"}/${id}`
+            `https://zahrabackend.onrender.com/note/${isGroup ? "group" : "conversation"}/${id}`
           );
           setNotes(res.data);
         } catch (err) {
@@ -73,7 +73,7 @@ const Note = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3500/note/${id}`);
+      await axios.delete(`https://zahrabackend.onrender.com/note/${id}`);
       setNotes(notes.filter(note => note._id !== id));
     } catch (err) {
       console.error("خطأ في حذف الملاحظة", err);
