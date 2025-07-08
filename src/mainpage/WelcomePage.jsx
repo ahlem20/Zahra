@@ -22,7 +22,7 @@ function WelcomePage() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:3500/users");
+        const res = await axios.get("https://zahrabackend.onrender.com/users");
         const doctorUsers = res.data.filter(user => user.roles === "doctor");
         setDoctors(doctorUsers);
       } catch (error) {
@@ -110,7 +110,7 @@ function WelcomePage() {
       <div className="doctor-card" key={doc._id}>
         <img
           className="doctor-image"
-          src={doc?.avatar ? `http://localhost:3500${doc.avatar}` : "./avatar.png"}
+          src={doc?.avatar ? `https://zahrabackend.onrender.com${doc.avatar}` : "./avatar.png"}
           alt="doctor"
         />
         <h3>{doc.username}</h3>
