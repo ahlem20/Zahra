@@ -62,7 +62,7 @@ const Signup = () => {
       formData.append("diploma", diploma.file);
       formData.append("description", description);
       formData.append("roles", "doctor");
-      const res = await fetch("http://localhost:3500/auth/signup", {
+      const res = await fetch("https://zahrabackend.onrender.com/auth/signup", {
         method: "POST",
         body: formData,
         credentials: "include",
