@@ -17,8 +17,8 @@ const Session = ({ onClose }) => {
     const fetchSessions = async () => {
       try {
         const [pendingRes, acceptedRes] = await Promise.all([
-          axios.get(`http://localhost:3500/session/pending/${userId}`),
-          axios.get(`http://localhost:3500/session/accepted/${userId}`),
+          axios.get(`https://zahrabackend.onrender.com/session/pending/${userId}`),
+          axios.get(`https://zahrabackend.onrender.com/session/accepted/${userId}`),
         ]);
         setPendingSessions(pendingRes.data || []);
         setAcceptedSessions(acceptedRes.data || []);
@@ -32,7 +32,7 @@ const Session = ({ onClose }) => {
 
   const handleAccept = async (id) => {
     try {
-      await axios.patch(`http://localhost:3500/session/accept/${id}`);
+      await axios.patch(`https://zahrabackend.onrender.com/session/accept/${id}`);
       setPendingSessions((prev) => prev.filter((s) => s._id !== id));
       const acceptedSession = pendingSessions.find((s) => s._id === id);
       setAcceptedSessions((prev) => [...prev, { ...acceptedSession, isAccepted: true }]);
