@@ -43,7 +43,7 @@ const Userinfo = () => {
     <div className="userInfo1" style={{ direction: "rtl", textAlign: "right" }}>
       <div className="user">
         <img
-          src={avatar ? `http://localhost:3500${avatar}` : "./avatar.png"}
+          src={avatar ? `https://zahrabackend.onrender.com${avatar}` : "./avatar.png"}
           alt="صورة المستخدم"
         />
         <h2>{username || "المستخدم"}</h2>
