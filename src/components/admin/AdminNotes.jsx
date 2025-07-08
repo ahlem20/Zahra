@@ -8,7 +8,7 @@ const AdminNotes = () => {
 
   const fetchAdminNotes = async () => {
     try {
-      const res = await axios.get("http://localhost:3500/note/admin");
+      const res = await axios.get("https://zahrabackend.onrender.com/note/admin");
       setNotes(res.data || []);
     } catch (error) {
       console.error("Error fetching admin notes:", error);
