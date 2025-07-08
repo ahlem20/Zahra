@@ -8,7 +8,7 @@ const UserActivation = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:3500/users");
+        const res = await axios.get("https://zahrabackend.onrender.com/users");
         const inactiveUsers = res.data.filter((user) => !user.active);
 
         // Group users by roles
@@ -30,7 +30,7 @@ const UserActivation = () => {
 
   const activateUser = async (userId) => {
     try {
-      await axios.patch(`http://localhost:3500/users/${userId}`, {
+      await axios.patch(`https://zahrabackend.onrender.com/users/${userId}`, {
         active: true,
       });
 
@@ -77,7 +77,7 @@ const UserActivation = () => {
                     <td>
                       {user.avatar && (
                         <img
-                          src={`http://localhost:3500${user.avatar}`}
+                          src={`https://zahrabackend.onrender.com${user.avatar}`}
                           alt="avatar"
                           style={{
                             width: "40px",
@@ -94,7 +94,7 @@ const UserActivation = () => {
                         {user.diploma &&
                           (user.diploma.endsWith(".pdf") ? (
                             <a
-                              href={`http://localhost:3500${user.diploma}`}
+                              href={`https://zahrabackend.onrender.com${user.diploma}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -102,7 +102,7 @@ const UserActivation = () => {
                             </a>
                           ) : (
                             <img
-                              src={`http://localhost:3500${user.diploma}`}
+                              src={`https://zahrabackend.onrender.com${user.diploma}`}
                               alt="Diploma"
                               style={{ width: "50px" }}
                             />
@@ -112,7 +112,7 @@ const UserActivation = () => {
                     <td>
                       {user.idCardFront && (
                         <img
-                          src={`http://localhost:3500${user.idCardFront}`}
+                          src={`https://zahrabackend.onrender.com${user.idCardFront}`}
                           alt="ID Front"
                           style={{ width: "50px" }}
                         />
@@ -121,7 +121,7 @@ const UserActivation = () => {
                     <td>
                       {user.idCardBack && (
                         <img
-                          src={`http://localhost:3500${user.idCardBack}`}
+                          src={`https://zahrabackend.onrender.com${user.idCardBack}`}
                           alt="ID Back"
                           style={{ width: "50px" }}
                         />
@@ -130,7 +130,7 @@ const UserActivation = () => {
                     <td>
                       {user.holdingIdCard && (
                         <img
-                          src={`http://localhost:3500${user.holdingIdCard}`}
+                          src={`https://zahrabackend.onrender.com${user.holdingIdCard}`}
                           alt="Holding ID"
                           style={{ width: "50px" }}
                         />
