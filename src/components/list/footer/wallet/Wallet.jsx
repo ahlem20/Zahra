@@ -27,7 +27,7 @@ const Wallet = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3500/wallet", form);
+      const response = await axios.post("https://zahrabackend.onrender.com/wallet", form);
       alert("Wallet topped up! New balance: $" + response.data.wallet.balance);
     } catch (err) {
       console.error(err);
