@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import Session from "./sessions/Session";
 import { FaCalendarCheck } from "react-icons/fa";
-import { useSocketContext } from "../../../context/SocketContext";  // Adjust path if needed
+import { MdScreenSearchDesktop } from "react-icons/md";
+import { useSocketContext } from "../../../context/SocketContext";
 import { toast } from "react-toastify";
 
 const Userinfo = () => {
@@ -10,14 +12,17 @@ const Userinfo = () => {
   const [avatar, setAvatar] = useState("");
   const [showSession, setShowSession] = useState(false);
   const { socket } = useSocketContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("chat-user"));
     if (storedUser) {
       setUsername(storedUser.username);
       setAvatar(storedUser.avatar);
+    } else {
+      navigate("/welcome");
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (!socket) return;
@@ -47,11 +52,21 @@ const Userinfo = () => {
           alt="صورة المستخدم"
         />
         <h2>{username || "المستخدم"}</h2>
-        <FaCalendarCheck
-          className="session-icon"
-          onClick={() => setShowSession(true)}
-          title="عرض الجلسات"
-        />
+        
+      </div>
+      <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+          <FaCalendarCheck
+            className="session-icon"
+            onClick={() => setShowSession(true)}
+            title="عرض الجلسات"
+            style={{ cursor: "pointer" }}
+          />
+          <MdScreenSearchDesktop
+            className="session-icon"
+            onClick={() => navigate("/welcome")}
+            title="تسجيل الخروج"
+            style={{ cursor: "pointer" }}
+          />
       </div>
 
       {showSession && <Session onClose={() => setShowSession(false)} />}
