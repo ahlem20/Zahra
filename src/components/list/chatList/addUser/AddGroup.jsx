@@ -53,7 +53,7 @@ const AddGroup = ({ onClose, chatUsers = [] }) => {
     const memberIds = [...new Set([currentUserId, ...selectedUserIds])];
 
     try {
-      await axios.post("http://localhost:3500/groups/create", {
+      await axios.post("https://zahrabackend.onrender.com/groups/create", {
         name: groupName,
         members: memberIds,
       });
