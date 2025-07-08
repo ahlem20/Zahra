@@ -39,7 +39,7 @@ const Login = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3500/auth/login", {
+      const res = await fetch("https://zahrabackend.onrender.com/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -91,7 +91,7 @@ const Login = () => {
       formData.append("idCardBack", idCardBack.file);
       formData.append("holdingIdCard", holdingIdCard.file);
 
-      const res = await fetch("http://localhost:3500/auth/signup", {
+      const res = await fetch("https://zahrabackend.onrender.com/auth/signup", {
         method: "POST",
         body: formData,
         credentials: "include",
