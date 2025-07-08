@@ -17,7 +17,7 @@ const Footer = () => {
     if (!user) return;
 
     try {
-      const response = await axios.get(`http://localhost:3500/wallet/${user.id}`);
+      const response = await axios.get(`https://zahrabackend.onrender.com/wallet/${user.id}`);
       setBalance(response.data.wallet.balance);
     } catch (err) {
       console.error("Failed to fetch wallet:", err.message);
@@ -31,7 +31,7 @@ const Footer = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:3500/auth/logout", {}, { withCredentials: true });
+      await axios.post("https://zahrabackend.onrender.com/auth/logout", {}, { withCredentials: true });
       localStorage.removeItem("chat-user");
       console.log("Logged out successfully");
       navigate("/login");
