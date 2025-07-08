@@ -45,12 +45,12 @@ const Session = ({ onClose }) => {
     <table className="session-table">
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Note</th>
-          <th>Price</th>
-          <th>Status</th>
-          {showAccept && <th>Action</th>}
+          <th>التاريخ</th>
+          <th>الوقت</th>
+          <th>ملاحظة</th>
+          <th>السعر</th>
+          <th>الحالة</th>
+          {showAccept && <th>الإجراء</th>}
         </tr>
       </thead>
       <tbody>
@@ -60,7 +60,7 @@ const Session = ({ onClose }) => {
             <td>{session.time}</td>
             <td>{session.note || "—"}</td>
             <td>{session.price || "—"}</td>
-            <td>{session.isAccepted ? "Accepted" : "Pending"}</td>
+            <td>{session.isAccepted ? "مقبولة" : "قيد الانتظار"}</td>
             {showAccept && (
               <td>
                 {!session.isAccepted && (
@@ -68,7 +68,7 @@ const Session = ({ onClose }) => {
                     className="accept-btn"
                     onClick={() => handleAccept(session._id)}
                   >
-                    Accept
+                    قبول
                   </button>
                 )}
               </td>
@@ -95,28 +95,28 @@ const Session = ({ onClose }) => {
   };
 
   return (
-    <div className="session-wrapper" onClick={onClose}>
+    <div className="session-wrapper" onClick={onClose} dir="rtl">
       <div className="session-container" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>&times;</button>
 
         <div className="session-section">
-          <h3 className="session-title">Pending Sessions</h3>
-          {pendingSessions.length > 0 ? renderTable(pendingSessions, canAccept) : <p>No pending sessions.</p>}
+          <h3 className="session-title">الجلسات قيد الانتظار</h3>
+          {pendingSessions.length > 0 ? renderTable(pendingSessions, canAccept) : <p>لا توجد جلسات قيد الانتظار.</p>}
         </div>
 
         <div className="session-section">
-          <h3 className="session-title">Accepted Sessions</h3>
-          {acceptedSessions.length > 0 ? renderTable(acceptedSessions, false) : <p>No accepted sessions.</p>}
+          <h3 className="session-title">الجلسات المقبولة</h3>
+          {acceptedSessions.length > 0 ? renderTable(acceptedSessions, false) : <p>لا توجد جلسات مقبولة.</p>}
         </div>
 
-        <div className="session-section" dir="ltr">
-          <h3 className="session-title">Session Calendar</h3>
-          <div className="calendar-wrapper">
+        <div className="session-section">
+          <h3 className="session-title">تقويم الجلسات</h3>
+          <div className="calendar-wrapper" dir="ltr">
             <Calendar
               onChange={setSelectedDate}
               value={selectedDate}
               tileClassName={tileClassName}
-              locale="en-US"
+              locale="ar-EG"
             />
           </div>
         </div>
