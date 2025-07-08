@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import useConversation from "../../zustand/useConversation";
 import { useSocketContext } from "../../context/SocketContext";
-import VoiceRecorder from "./voice/VoiceRecorder";
-import VoicePlayer from "./voice/VoicePlayer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -13,9 +11,12 @@ const Chat = () => {
   const user = JSON.parse(localStorage.getItem("chat-user"));
   const { selectedUser } = useConversation();
   const storedConversation = JSON.parse(localStorage.getItem("selected-conversation"));
-
-  const conversationId = selectedUser?._id;
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const audioChunksRef = useRef([]);
+  
   const userId = user?._id || user?.id;
+  const conversationId = selectedUser?._id;
   const conversationName = storedConversation?.name || storedConversation?.username || "لا يوجد اسم";
   const groupId = storedConversation?._id;
   const isGroup = selectedUser?.type === "group";
@@ -51,7 +52,7 @@ const Chat = () => {
       try {
         if (isGroup) {
           const res = await axios.get(
-            `http://localhost:3500/message/messages/group/${conversationId}`
+            `https://zahrabackend.onrender.com/message/messages/group/${conversationId}`
           );
           const sorted = (res.data?.messages || []).sort(
             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
@@ -59,9 +60,9 @@ const Chat = () => {
           setMessages(sorted);
         } else {
           const [textRes, audioRes, imageRes] = await Promise.all([
-            axios.get(`http://localhost:3500/message/conversation/${userId}/${conversationId}`),
-            axios.get(`http://localhost:3500/message/audio-messages/${userId}/${conversationId}`),
-            axios.get(`http://localhost:3500/message/messages/image/${userId}/${conversationId}`),
+            axios.get(`https://zahrabackend.onrender.com/message/conversation/${userId}/${conversationId}`),
+            axios.get(`https://zahrabackend.onrender.com/message/messages/audio/${userId}/${conversationId}`),
+            axios.get(`https://zahrabackend.onrender.com/message/messages/image/${userId}/${conversationId}`),
           ]);
 
           const audioMessages = Array.isArray(audioRes.data.messages)
@@ -106,7 +107,7 @@ const Chat = () => {
     };
 
     try {
-      await axios.post("http://localhost:3500/message/send", messageData);
+      await axios.post("https://zahrabackend.onrender.com/message/send", messageData);
       setMessages((prev) => [...prev, messageData]);
       setText("");
     } catch (err) {
@@ -143,7 +144,7 @@ const Chat = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:3500/message/send-image", formData, {
+      const res = await axios.post("https://zahrabackend.onrender.com/message/send-image", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -163,13 +164,61 @@ const Chat = () => {
       </div>
     );
   }
-
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+  
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+  
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        audioChunksRef.current = [];
+  
+        const formData = new FormData();
+        formData.append("audio", audioBlob);
+        formData.append("senderId", userId);
+        formData.append("timestamp", new Date().toISOString());
+  
+        if (isGroup) {
+          formData.append("groupId", conversationId);
+        } else {
+          formData.append("receiverId", conversationId);
+        }
+  
+        try {
+          const res = await axios.post("https://zahrabackend.onrender.com/message/send-audio", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          setMessages((prev) => [...prev, res.data.message]);
+        } catch (err) {
+          console.error("فشل في إرسال الرسالة الصوتية:", err);
+        }
+      };
+  
+      recorder.start();
+    } catch (err) {
+      console.error("خطأ في بدء التسجيل:", err);
+    }
+  };
+  
+  const stopRecording = () => {
+    mediaRecorder?.stop();
+    setIsRecording(false);
+  };
+  
   return (
     <div className="chat" dir="ltr">
       <div className="top">
         <div className="user">
           <img
-            src={selectedUser?.avatar ? `http://localhost:3500${selectedUser.avatar}` : "./avatar.png"}
+            src={selectedUser?.avatar ? `https://zahrabackend.onrender.com${selectedUser.avatar}` : "./avatar.png"}
             alt="المستخدم"
           />
           <div className="texts">
@@ -185,53 +234,74 @@ const Chat = () => {
       </div>
 
       <div className="center">
-        {messages.filter((msg) => msg && (msg.message || msg.audioUrl || msg.imageUrl)).map((msg, i) => (
-          <div className={`message ${msg.senderId === userId ? "own" : ""}`} key={msg._id || i}>
-            <div className="texts">
-              {msg.senderId !== userId && (
-                <img
-                  src={selectedUser?.avatar ? `http://localhost:3500${selectedUser.avatar}` : "./avatar.png"}
-                  alt="المستخدم"
-                  className="small-image"
-                />
-              )}
-              {msg.imageUrl && (
-                <img
-                  src={`http://localhost:3500${msg.imageUrl}`}
-                  alt="صورة"
-                  className="chat-image"
-                />
-              )}
-              {msg.message && <p>{msg.message}</p>}
-              {msg.audioUrl && <VoicePlayer audioUrl={msg.audioUrl} />}
-              <span>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+        {messages
+          .filter((msg) => msg && (msg.message || msg.audioUrl || msg.imageUrl))
+          .map((msg, i) => (
+            <div className={`message ${msg.senderId === userId ? "own" : ""}`} key={msg._id || i}>
+              <div className="texts">
+                {msg.senderId !== userId && (
+                  <img
+                    src={
+                      selectedUser?.avatar
+                        ? `http://localhost:3500${selectedUser.avatar}`
+                        : "./avatar.png"
+                    }
+                    alt="User"
+                    className="small-image"
+                  />
+                )}
+
+                {msg.imageUrl && (
+                  <img
+                    src={`https://zahrabackend.onrender.com${msg.imageUrl}`}
+                    alt="chat"
+                    className="chat-image"
+                  />
+                )}
+
+                {msg.message && <p>{msg.message}</p>}
+                {msg.audioUrl && (
+  <div className="voice-player">
+    <audio controls>
+      <source src={`https://zahrabackend.onrender.com${msg.audioUrl}`} type="audio/webm" />
+      المتصفح لا يدعم تشغيل الصوت.
+    </audio>
+  </div>
+)}
+
+
+<span>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <div ref={endRef}></div>
       </div>
 
       <div className="bottom">
         {!isGroup && (
-          <div className="icons">
-            <>
-              <input
-                type="file"
-                accept="image/*"
-                ref={(ref) => (window.imageInput = ref)}
-                style={{ display: "none" }}
-                onChange={handleImageUpload}
-              />
-              <img src="./img.png" alt="رفع صورة" style={{ cursor: "pointer" }} onClick={() => window.imageInput.click()} />
-            </>
-            <img src="./camera.png" alt="كاميرا" />
-            <VoiceRecorder
-              senderId={userId}
-              receiverId={!isGroup ? conversationId : undefined}
-              groupId={isGroup ? conversationId : undefined}
-              onSent={(voiceMsg) => setMessages((prev) => [...prev, voiceMsg])}
-            />
-          </div>
+         <div className="icons">
+         <input
+           type="file"
+           accept="image/*"
+           ref={(ref) => (window.imageInput = ref)}
+           style={{ display: "none" }}
+           onChange={handleImageUpload}
+         />
+         <img
+           src="./img.png"
+           alt="رفع صورة"
+           style={{ cursor: "pointer" }}
+           onClick={() => window.imageInput?.click()}
+         />
+         <img src="./camera.png" alt="كاميرا" />
+         <img
+           src={isRecording ? "./stop.png" : "./mic.png"}
+           alt="ميكروفون"
+           style={{ cursor: "pointer" }}
+           onClick={isRecording ? stopRecording : startRecording}
+         />
+       </div>
+       
         )}
 
         <input
@@ -264,6 +334,7 @@ const Chat = () => {
           إرسال
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 };
