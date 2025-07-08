@@ -13,7 +13,7 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      const socketInstance = io("http://localhost:3500", {
+      const socketInstance = io("https://zahrabackend.onrender.com", {
         query: {
           userId: user._id || user.id,
         },
