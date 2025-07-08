@@ -14,7 +14,7 @@ const Chat = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const audioChunksRef = useRef([]);
-  
+
   const userId = user?._id || user?.id;
   const conversationId = selectedUser?._id;
   const conversationName = storedConversation?.name || storedConversation?.username || "لا يوجد اسم";
@@ -94,34 +94,37 @@ const Chat = () => {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
   const handleSend = async () => {
     if (!text.trim()) return;
-
+  
     const messageData = {
       senderId: userId,
       message: text,
-      timestamp: new Date().toISOString(),
-      type: "text",
+      devMode: true,
       ...(isGroup ? { groupId: conversationId } : { receiverId: conversationId }),
     };
-
+  
     try {
       await axios.post("https://zahrabackend.onrender.com/message/send", messageData);
-      setMessages((prev) => [...prev, messageData]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...messageData,
+          timestamp: new Date().toISOString(), // Add timestamp locally for instant UI update
+        },
+      ]);
       setText("");
     } catch (err) {
       const errorMessage = err?.response?.data?.error || "فشل في إرسال الرسالة.";
-
       if (errorMessage.includes("You can only send messages between 1 hour before")) {
         toast.warn(errorMessage);
       } else {
         toast.error("تحتاج إلى حجز جلسة.");
       }
-
       console.error("خطأ في إرسال الرسالة:", err);
     }
   };
+  
 
   const handleEmoji = (emojiObject) => {
     setText((prev) => prev + emojiObject.emoji);
@@ -147,11 +150,59 @@ const Chat = () => {
       const res = await axios.post("https://zahrabackend.onrender.com/message/send-image", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
       setMessages((prev) => [...prev, res.data.message]);
     } catch (err) {
       console.error("فشل في رفع الصورة:", err);
     }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        audioChunksRef.current = [];
+
+        const formData = new FormData();
+        formData.append("audio", audioBlob);
+        formData.append("senderId", userId);
+        formData.append("timestamp", new Date().toISOString());
+
+        if (isGroup) {
+          formData.append("groupId", conversationId);
+        } else {
+          formData.append("receiverId", conversationId);
+        }
+
+        try {
+          const res = await axios.post("https://zahrabackend.onrender.com/message/send-audio", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          setMessages((prev) => [...prev, res.data.message]);
+        } catch (err) {
+          console.error("فشل في إرسال الرسالة الصوتية:", err);
+        }
+      };
+
+      recorder.start();
+    } catch (err) {
+      console.error("خطأ في بدء التسجيل:", err);
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorder?.stop();
+    setIsRecording(false);
   };
 
   if (!selectedUser) {
@@ -164,61 +215,18 @@ const Chat = () => {
       </div>
     );
   }
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      setMediaRecorder(recorder);
-      setIsRecording(true);
-  
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          audioChunksRef.current.push(e.data);
-        }
-      };
-  
-      recorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        audioChunksRef.current = [];
-  
-        const formData = new FormData();
-        formData.append("audio", audioBlob);
-        formData.append("senderId", userId);
-        formData.append("timestamp", new Date().toISOString());
-  
-        if (isGroup) {
-          formData.append("groupId", conversationId);
-        } else {
-          formData.append("receiverId", conversationId);
-        }
-  
-        try {
-          const res = await axios.post("https://zahrabackend.onrender.com/message/send-audio", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          setMessages((prev) => [...prev, res.data.message]);
-        } catch (err) {
-          console.error("فشل في إرسال الرسالة الصوتية:", err);
-        }
-      };
-  
-      recorder.start();
-    } catch (err) {
-      console.error("خطأ في بدء التسجيل:", err);
-    }
-  };
-  
-  const stopRecording = () => {
-    mediaRecorder?.stop();
-    setIsRecording(false);
-  };
-  
+
   return (
     <div className="chat" dir="ltr">
+      <ToastContainer />
       <div className="top">
         <div className="user">
           <img
-            src={selectedUser?.avatar ? `https://zahrabackend.onrender.com${selectedUser.avatar}` : "./avatar.png"}
+            src={
+              selectedUser?.avatar
+                ? `https://zahrabackend.onrender.com${selectedUser.avatar}`
+                : "./avatar.png"
+            }
             alt="المستخدم"
           />
           <div className="texts">
@@ -243,14 +251,13 @@ const Chat = () => {
                   <img
                     src={
                       selectedUser?.avatar
-                        ? `http://localhost:3500${selectedUser.avatar}`
+                        ? `https://zahrabackend.onrender.com${selectedUser.avatar}`
                         : "./avatar.png"
                     }
                     alt="User"
                     className="small-image"
                   />
                 )}
-
                 {msg.imageUrl && (
                   <img
                     src={`https://zahrabackend.onrender.com${msg.imageUrl}`}
@@ -258,19 +265,16 @@ const Chat = () => {
                     className="chat-image"
                   />
                 )}
-
                 {msg.message && <p>{msg.message}</p>}
                 {msg.audioUrl && (
-  <div className="voice-player">
-    <audio controls>
-      <source src={`https://zahrabackend.onrender.com${msg.audioUrl}`} type="audio/webm" />
-      المتصفح لا يدعم تشغيل الصوت.
-    </audio>
-  </div>
-)}
-
-
-<span>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                  <div className="voice-player">
+                    <audio controls>
+                      <source src={`https://zahrabackend.onrender.com${msg.audioUrl}`} type="audio/webm" />
+                      المتصفح لا يدعم تشغيل الصوت.
+                    </audio>
+                  </div>
+                )}
+                <span>{new Date(msg.timestamp).toLocaleTimeString()}</span>
               </div>
             </div>
           ))}
@@ -279,29 +283,22 @@ const Chat = () => {
 
       <div className="bottom">
         {!isGroup && (
-         <div className="icons">
-         <input
-           type="file"
-           accept="image/*"
-           ref={(ref) => (window.imageInput = ref)}
-           style={{ display: "none" }}
-           onChange={handleImageUpload}
-         />
-         <img
-           src="./img.png"
-           alt="رفع صورة"
-           style={{ cursor: "pointer" }}
-           onClick={() => window.imageInput?.click()}
-         />
-         <img src="./camera.png" alt="كاميرا" />
-         <img
-           src={isRecording ? "./stop.png" : "./mic.png"}
-           alt="ميكروفون"
-           style={{ cursor: "pointer" }}
-           onClick={isRecording ? stopRecording : startRecording}
-         />
-       </div>
-       
+          <div className="icons">
+            <input
+              type="file"
+              accept="image/*"
+              ref={(ref) => (window.imageInput = ref)}
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+            <img src="./img.png" alt="رفع صورة" onClick={() => window.imageInput?.click()} />
+            <img src="./camera.png" alt="كاميرا" />
+            <img
+              src={isRecording ? "./stop.png" : "./mic.png"}
+              alt="ميكروفون"
+              onClick={isRecording ? stopRecording : startRecording}
+            />
+          </div>
         )}
 
         <input
@@ -319,7 +316,6 @@ const Chat = () => {
             className="emoji-icon"
             src="./emoji.png"
             alt="رمز تعبيري"
-            style={{ cursor: "pointer" }}
             onClick={() => setOpen((prev) => !prev)}
           />
         )}
@@ -330,11 +326,8 @@ const Chat = () => {
           </div>
         )}
 
-        <button className="sendButton" onClick={handleSend}>
-          إرسال
-        </button>
+        <button onClick={handleSend}>إرسال</button>
       </div>
-      <ToastContainer />
     </div>
   );
 };
