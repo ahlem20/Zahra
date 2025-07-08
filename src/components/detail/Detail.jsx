@@ -124,6 +124,16 @@ const Detail = () => {
     }
   };
 
+  // Check if session is currently active (1h before to 2h after)
+  const isSessionOpen = (() => {
+    if (!activeSession?.date || !activeSession?.time) return false;
+    const sessionDate = new Date(`${activeSession.date}T${activeSession.time.trim()}:00Z`);
+    const now = new Date();
+    const openTime = new Date(sessionDate.getTime() - 60 * 60 * 1000); // 1h before
+    const closeTime = new Date(sessionDate.getTime() + 2 * 60 * 60 * 1000); // 2h after
+    return now >= openTime && now <= closeTime;
+  })();
+
   return (
     <div className="detail" dir="rtl">
       <div className="userInfo">
@@ -188,7 +198,9 @@ const Detail = () => {
                     <img
                       src={`https://zahrabackend.onrender.com${img.imageUrl}`}
                       alt={`img-${i}`}
-                      onClick={() => window.open(`https://zahrabackend.onrender.com${img.imageUrl}`, "_blank")}
+                      onClick={() =>
+                        window.open(`https://zahrabackend.onrender.com${img.imageUrl}`, "_blank")
+                      }
                       style={{ cursor: "pointer" }}
                     />
                     <span>{img.imageUrl.split("/").pop()}</span>
@@ -201,23 +213,23 @@ const Detail = () => {
             )}
           </div>
         )}
-{!isGroup && activeSession?.startedAt && (
-  <button
-    onClick={handleEndSession}
-    style={{
-      marginTop: "10px",
-      padding: "10px 20px",
-      backgroundColor: "#ff4d4f",
-      color: "white",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-    }}
-  >
-    إنهاء الجلسة
-  </button>
-)}
 
+        {!isGroup && isSessionOpen && (
+          <button
+            onClick={handleEndSession}
+            style={{
+              marginTop: "10px",
+              padding: "10px 20px",
+              backgroundColor: "#ff4d4f",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            إنهاء الجلسة
+          </button>
+        )}
 
         {isGroup && (
           <button
