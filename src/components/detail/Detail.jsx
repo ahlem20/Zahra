@@ -37,7 +37,7 @@ const Detail = () => {
     const fetchReceiver = async () => {
       if (!receiverId || isGroup) return;
       try {
-        const res = await axios.get(`http://localhost:3500/users/${receiverId}`);
+        const res = await axios.get(`https://zahrabackend.onrender.com/users/${receiverId}`);
         setReceiverData(res.data);
       } catch (err) {
         console.error("فشل في جلب بيانات المستخدم:", err);
@@ -50,7 +50,7 @@ const Detail = () => {
     const fetchImages = async () => {
       if (!userId || !receiverId || isGroup) return;
       try {
-        const res = await axios.get(`http://localhost:3500/message/messages/image/${userId}/${receiverId}`);
+        const res = await axios.get(`https://zahrabackend.onrender.com/message/messages/image/${userId}/${receiverId}`);
         setSharedImages(res.data?.messages || []);
       } catch (err) {
         console.error("فشل في جلب الصور المشاركة", err);
@@ -63,7 +63,7 @@ const Detail = () => {
     const fetchSession = async () => {
       if (!userId || !receiverId || isGroup) return;
       try {
-        const res = await axios.get(`http://localhost:3500/session/accepted/${userId}`);
+        const res = await axios.get(`https://zahrabackend.onrender.com/session/accepted/${userId}`);
         const sessions = res.data;
 
         const session = sessions.find(
@@ -85,7 +85,7 @@ const Detail = () => {
     if (!activeSession) return;
 
     try {
-      await axios.delete(`http://localhost:3500/session/${activeSession._id}`);
+      await axios.delete(`https://zahrabackend.onrender.com/session/${activeSession._id}`);
       setActiveSession(null);
       alert("تم إنهاء الجلسة بنجاح.");
     } catch (err) {
@@ -99,7 +99,7 @@ const Detail = () => {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:3500/groups/${groupId}`);
+      await axios.delete(`https://zahrabackend.onrender.com/groups/${groupId}`);
       alert("تم حذف المجموعة بنجاح.");
       window.location.reload();
     } catch (err) {
@@ -113,7 +113,7 @@ const Detail = () => {
     if (!message || !message.trim()) return;
 
     try {
-      await axios.post("http://localhost:3500/note/admin", {
+      await axios.post("https://zahrabackend.onrender.com/note/admin", {
         text: message.trim(),
         userId,
       });
@@ -133,7 +133,7 @@ const Detail = () => {
               isGroup
                 ? "./group-icon.png"
                 : receiverData?.avatar
-                ? `http://localhost:3500${receiverData.avatar}`
+                ? `https://zahrabackend.onrender.com${receiverData.avatar}`
                 : "./avatar.png"
             }
             alt="صورة الملف الشخصي"
@@ -186,14 +186,14 @@ const Detail = () => {
                 <div className="photoItem" key={img._id || i}>
                   <div className="photoDetail">
                     <img
-                      src={`http://localhost:3500${img.imageUrl}`}
+                      src={`https://zahrabackend.onrender.com${img.imageUrl}`}
                       alt={`img-${i}`}
-                      onClick={() => window.open(`http://localhost:3500${img.imageUrl}`, "_blank")}
+                      onClick={() => window.open(`https://zahrabackend.onrender.com${img.imageUrl}`, "_blank")}
                       style={{ cursor: "pointer" }}
                     />
                     <span>{img.imageUrl.split("/").pop()}</span>
                   </div>
-                  <a href={`http://localhost:3500${img.imageUrl}`} download>
+                  <a href={`https://zahrabackend.onrender.com${img.imageUrl}`} download>
                     <img src="./download.png" className="icon1" alt="تحميل" />
                   </a>
                 </div>
@@ -201,23 +201,23 @@ const Detail = () => {
             )}
           </div>
         )}
+{!isGroup && activeSession?.startedAt && (
+  <button
+    onClick={handleEndSession}
+    style={{
+      marginTop: "10px",
+      padding: "10px 20px",
+      backgroundColor: "#ff4d4f",
+      color: "white",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+    }}
+  >
+    إنهاء الجلسة
+  </button>
+)}
 
-        {!isGroup && activeSession && (
-          <button
-            onClick={handleEndSession}
-            style={{
-              marginTop: "10px",
-              padding: "10px 20px",
-              backgroundColor: "#ff4d4f",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            إنهاء الجلسة
-          </button>
-        )}
 
         {isGroup && (
           <button
