@@ -19,6 +19,7 @@ const ChatList = () => {
   const searchParams = new URLSearchParams(location.search);
   const receiverIdFromURL = searchParams.get("receiverId");
 
+  // Get current user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("chat-user");
     if (storedUser) {
@@ -28,42 +29,37 @@ const ChatList = () => {
     }
   }, []);
 
+  // Disable add group for "sick" role
   useEffect(() => {
     if (role === "sick") setAddMode(false);
   }, [role]);
 
+  // Fetch users, groups, and messages
   useEffect(() => {
     const fetchData = async () => {
       if (!currentUser?._id && !currentUser?.id) return;
+
       const id = currentUser._id || currentUser.id;
 
       try {
         const [usersRes, groupsRes, messagesRes] = await Promise.all([
-          axios.get("http://localhost:3500/users"),
-          axios.get(`http://localhost:3500/groups/user/${id}`),
-          axios.get(`http://localhost:3500/message/messages/user/${id}`),
+          axios.get("https://zahrabackend.onrender.com/users"),
+          axios.get(`https://zahrabackend.onrender.com/groups/user/${id}`),
+          axios.get(`https://zahrabackend.onrender.com/message/messages/user/${id}`),
         ]);
 
         const allUsers = usersRes.data;
         const allMessages = messagesRes.data.messages || [];
         const relevantUserIds = new Set();
 
-        if (role === "sick") {
-          allMessages.forEach((msg) => {
-            if (msg.receiverId === id && msg.senderId !== id) {
-              relevantUserIds.add(msg.senderId);
-            }
-          });
-        } else {
-          allMessages.forEach((msg) => {
-            if (msg.senderId === id && msg.receiverId !== id) {
-              relevantUserIds.add(msg.receiverId);
-            }
-            if (msg.receiverId === id && msg.senderId !== id) {
-              relevantUserIds.add(msg.senderId);
-            }
-          });
-        }
+        allMessages.forEach((msg) => {
+          if (msg.senderId !== id && msg.receiverId === id) {
+            relevantUserIds.add(msg.senderId);
+          }
+          if (msg.receiverId !== id && msg.senderId === id) {
+            relevantUserIds.add(msg.receiverId);
+          }
+        });
 
         const filteredUsers = allUsers.filter(
           (user) => relevantUserIds.has(user._id) && user._id !== id
@@ -77,19 +73,18 @@ const ChatList = () => {
         }));
         setGroups(groupsWithType);
 
+        // Handle receiverId in URL
         if (receiverIdFromURL && receiverIdFromURL !== id) {
-          const alreadyInList = filteredUsers.some((u) => u._id === receiverIdFromURL);
-          if (!alreadyInList) {
-            const res = await axios.get(`http://localhost:3500/users/${receiverIdFromURL}`);
+          const existingUser = filteredUsers.find((u) => u._id === receiverIdFromURL);
+
+          if (existingUser) {
+            setSelectedUser(existingUser);
+            localStorage.setItem("selected-conversation", JSON.stringify(existingUser));
+          } else {
+            const res = await axios.get(`https://zahrabackend.onrender.com/users/${receiverIdFromURL}`);
             setExtraUser(res.data);
             setSelectedUser(res.data);
             localStorage.setItem("selected-conversation", JSON.stringify(res.data));
-          } else {
-            const existingUser = filteredUsers.find((u) => u._id === receiverIdFromURL);
-            if (existingUser) {
-              setSelectedUser(existingUser);
-              localStorage.setItem("selected-conversation", JSON.stringify(existingUser));
-            }
           }
         }
 
@@ -101,9 +96,9 @@ const ChatList = () => {
     if (currentUser) fetchData();
   }, [currentUser, role]);
 
-  const handleSelectUser = (user) => {
-    setSelectedUser(user);
-    localStorage.setItem("selected-conversation", JSON.stringify(user));
+  const handleSelectConversation = (userOrGroup) => {
+    setSelectedUser(userOrGroup);
+    localStorage.setItem("selected-conversation", JSON.stringify(userOrGroup));
   };
 
   const handleDeleteConversation = async (userIdToDelete) => {
@@ -134,6 +129,7 @@ const ChatList = () => {
 
   return (
     <div className="chatList" dir="rtl">
+      {/* Search Bar */}
       <div className="search">
         <div className="searchBar">
           <img src="./search.png" alt="بحث" />
@@ -154,11 +150,12 @@ const ChatList = () => {
         )}
       </div>
 
+      {/* Group List */}
       {filteredGroups.map((group) => (
         <div
           className="item"
           key={group._id}
-          onClick={() => handleSelectUser(group)}
+          onClick={() => handleSelectConversation(group)}
           style={{
             backgroundColor:
               selectedUser?._id === group._id ? "rgb(2 66 159 / 52%)" : "transparent",
@@ -172,6 +169,7 @@ const ChatList = () => {
         </div>
       ))}
 
+      {/* User List */}
       {filteredUsers.map((user) => (
         <div
           className="item"
@@ -181,16 +179,17 @@ const ChatList = () => {
               selectedUser?._id === user._id ? "rgb(2 66 159 / 52%)" : "transparent",
           }}
         >
-          <div onClick={() => handleSelectUser(user)} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+          <div
+            onClick={() => handleSelectConversation(user)}
+            style={{ flex: 1, display: "flex", alignItems: "center" }}
+          >
             <img
-              src={user.avatar ? `http://localhost:3500${user.avatar}` : "./avatar.png"}
+              src={user.avatar ? `https://zahrabackend.onrender.com${user.avatar}` : "./avatar.png"}
               alt="صورة"
             />
             <div className="texts">
               <span>
-                {user.username === currentUser?.username && user.email === currentUser?.email
-                  ? "ملاحظاتي"
-                  : user.username}
+                {user.username === currentUser?.username ? "ملاحظاتي" : user.username}
               </span>
               <p>{user.email}</p>
             </div>
@@ -201,23 +200,29 @@ const ChatList = () => {
             alt="حذف"
             className="delete-icon"
             onClick={() => handleDeleteConversation(user._id)}
-            style={{ width: "30px", height: "30px", cursor: "pointer", marginLeft: "8px" }}
+            style={{
+              width: "30px",
+              height: "30px",
+              cursor: "pointer",
+              marginLeft: "8px",
+            }}
           />
         </div>
       ))}
 
-      {extraUser && (
+      {/* Extra User (if coming from URL) */}
+      {extraUser && !users.some((u) => u._id === extraUser._id) && (
         <div
           className="item"
           key={extraUser._id}
-          onClick={() => handleSelectUser(extraUser)}
+          onClick={() => handleSelectConversation(extraUser)}
           style={{
             backgroundColor:
               selectedUser?._id === extraUser._id ? "rgb(2 66 159 / 52%)" : "transparent",
           }}
         >
           <img
-            src={extraUser.avatar ? `http://localhost:3500${extraUser.avatar}` : "./avatar.png"}
+            src={extraUser.avatar ? `https://zahrabackend.onrender.com${extraUser.avatar}` : "./avatar.png"}
             alt="صورة"
           />
           <div className="texts">
@@ -227,8 +232,11 @@ const ChatList = () => {
         </div>
       )}
 
-      {addMode && role !== "sick" && <AddGroup onClose={() => setAddMode(false)} chatUsers={users} />}
-</div>
+      {/* Add Group UI */}
+      {addMode && role !== "sick" && (
+        <AddGroup onClose={() => setAddMode(false)} chatUsers={users} />
+      )}
+    </div>
   );
 };
 
