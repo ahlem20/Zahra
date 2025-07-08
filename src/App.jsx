@@ -16,7 +16,7 @@ const App = () => {
 
   const currentHour = new Date().getHours();
   const isMorning = currentHour >= 6 && currentHour < 18;
-  const videoSrc = isMorning ? "/night.mp4" : "/morning.mp4";
+  const videoSrc = isMorning ? "/morning.mp4" : "/night.mp4";
 
   const storedUser = localStorage.getItem("chat-user");
   const role = storedUser ? JSON.parse(storedUser).roles : null;
