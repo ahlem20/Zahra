@@ -125,7 +125,17 @@ const Chat = () => {
     }
   };
   
-
+  const handleDeleteImageMessage = async (messageId) => {
+    try {
+      await axios.delete(`https://zahrabackend.onrender.com/message/message/${messageId}`);
+      setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+      toast.success("تم حذف صورة الرسالة بنجاح");
+    } catch (err) {
+      console.error("فشل في حذف صورة الرسالة:", err);
+      toast.error("حدث خطأ أثناء حذف الرسالة.");
+    }
+  };
+  
   const handleEmoji = (emojiObject) => {
     setText((prev) => prev + emojiObject.emoji);
     setOpen(false);
@@ -259,12 +269,23 @@ const Chat = () => {
                   />
                 )}
                 {msg.imageUrl && (
-                  <img
-                    src={`https://zahrabackend.onrender.com${msg.imageUrl}`}
-                    alt="chat"
-                    className="chat-image"
-                  />
-                )}
+  <div className="chat-image-wrapper">
+    <img
+      src={`https://zahrabackend.onrender.com${msg.imageUrl}`}
+      alt="chat"
+      className="chat-image"
+    />
+    {msg.senderId === userId && (
+      <button
+        className="delete-button"
+        onClick={() => handleDeleteImageMessage(msg._id)}
+      >
+        🗑️
+      </button>
+    )}
+  </div>
+)}
+
                 {msg.message && <p>{msg.message}</p>}
                 {msg.audioUrl && (
                   <div className="voice-player">
