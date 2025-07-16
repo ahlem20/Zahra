@@ -1,45 +1,50 @@
 .footer {
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgba(17, 25, 40, 0.33); /* optional background */
-    border-top: 1px solid #dddddd35; /* subtle top border */
-  }
-  
-  .footer .wallet {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  
-  .footer .walletInfo {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .footer .walletInfo span {
-    font-size: 14px;
-    color: #ccc; /* Light gray for label */
-    font-weight: 400;
-  }
-  
-  .footer .walletInfo p {
-    font-size: 16px;
-    color: white; /* Wallet amount */
-    font-weight: 600;
-    margin: 0;
-  }
-  
-  .footer .icona {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  
-  .footer .icona {
-    transform: scale(1.1); /* subtle hover zoom effect */
-  }
-  
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center all items including divider */
+  gap: 20px; /* space between wallet, divider, and logout */
+  background-color: rgba(17, 25, 40, 0.33); /* optional background */
+  border-top: 1px solid #dddddd35; /* subtle top border */
+}
+
+.footer .wallet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.footer .walletInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer .walletInfo span {
+  font-size: 14px;
+  color: #ccc; /* Light gray for label */
+  font-weight: 400;
+}
+
+.footer .walletInfo p {
+  font-size: 16px;
+  color: white; /* Wallet amount */
+  font-weight: 600;
+  margin: 0;
+}
+
+.footer .icona {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transform: scale(1.1); /* subtle hover zoom effect */
+}
+
+/* Divider Style */
+.footer .divider {
+  width: 1px;
+  height: 30px;
+  background-color: #999; /* or white for high contrast */
+  opacity: 0.4;
+}
