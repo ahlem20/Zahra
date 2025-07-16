@@ -50,14 +50,18 @@ const Footer = () => {
           <p>{balance.toFixed(2)} DA</p>
         </div>
       </div>
-
+  
+      {/* Line Divider */}
+      <div className="divider"></div>
+  
       <div className="icona" onClick={handleLogout}>
         <IoLogOutOutline size={28} />
       </div>
-
+  
       {addMony && <Wallet />}
     </div>
   );
+  
 };
 
 export default Footer;
