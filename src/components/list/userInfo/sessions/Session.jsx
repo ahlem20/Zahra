@@ -20,8 +20,8 @@ const Session = ({ onClose }) => {
     const fetchSessions = async () => {
       try {
         const [pendingRes, acceptedRes] = await Promise.all([
-          axios.get(`http://localhost:3500/session/pending/${userId}`),
-          axios.get(`http://localhost:3500/session/accepted/${userId}`),
+          axios.get(`https://zahrabackend.onrender.com/session/pending/${userId}`),
+          axios.get(`https://zahrabackend.onrender.com/session/accepted/${userId}`),
         ]);
 
         setPendingSessions(Array.isArray(pendingRes.data) ? pendingRes.data : []);
@@ -37,7 +37,7 @@ const Session = ({ onClose }) => {
 
   const handleAccept = async (id) => {
     try {
-      const res = await axios.patch(`http://localhost:3500/session/accept/${id}`);
+      const res = await axios.patch(`https://zahrabackend.onrender.com/session/accept/${id}`);
       toast.success("تم قبول الجلسة.");
 
       const acceptedSession = pendingSessions.find((s) => s._id === id);
@@ -51,7 +51,7 @@ const Session = ({ onClose }) => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:3500/session/update/${editPopup}`, editData);
+      await axios.put(`https://zahrabackend.onrender.com/session/update/${editPopup}`, editData);
       toast.success("تم تعديل الجلسة.");
   
       setAcceptedSessions((prev) =>
@@ -87,7 +87,7 @@ const Session = ({ onClose }) => {
       <tbody>
         {sessions.map((session) => (
           <tr key={session._id}>
-            <td>{session.receiverName || "—"}</td>
+            <td>{session.requesterName || "—"}</td>
             <td>{session.date}</td>
             <td>{session.time}</td>
             <td>{session.note || "—"}</td>
