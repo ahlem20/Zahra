@@ -1,5 +1,3 @@
-// === FRONTEND: Detail.jsx ===
-
 import { useState, useEffect } from "react";
 import "./detail1.css";
 import axios from "axios";
@@ -36,9 +34,9 @@ const Detail = () => {
 
   const avatarUrl =
     storedReceiver?.avatar
-      ? `http://localhost:3500${storedReceiver.avatar}`
+      ? `https://zahrabackend.onrender.com${storedReceiver.avatar}`
       : receiverData?.avatar
-      ? `http://localhost:3500${receiverData.avatar}`
+      ? `https://zahrabackend.onrender.com${receiverData.avatar}`
       : "./avatar.png";
 
   const isGroup = selectedUser?.type === "group" || storedReceiver?.type === "group";
@@ -47,7 +45,7 @@ const Detail = () => {
     const fetchReceiver = async () => {
       if (!receiverId) return;
       try {
-        const res = await axios.get(`http://localhost:3500/users/${receiverId}`);
+        const res = await axios.get(`https://zahrabackend.onrender.com/users/${receiverId}`);
         setReceiverData(res.data);
       } catch (err) {
         console.error("فشل في جلب بيانات المستخدم:", err);
@@ -61,7 +59,7 @@ const Detail = () => {
       if (!userId || !receiverId) return;
       try {
         const res = await axios.get(
-          `http://localhost:3500/message/messages/image/${userId}/${receiverId}`
+          `https://zahrabackend.onrender.com/message/messages/image/${userId}/${receiverId}`
         );
         setSharedImages(res.data?.messages || []);
       } catch (err) {
@@ -73,26 +71,28 @@ const Detail = () => {
 
   const handleDemandClick = () => {
     setShowDemandForm(!showDemandForm);
-  };const handleSubmit = async (e) => {
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    const receiverName = receiverData?.username || "بدون اسم";
-  
+
+    const requesterName = currentUser?.username || "بدون اسم";
+
     const sessionData = {
       requesterId: userId,
       receiverId,
-      receiverName,
+      requesterName,
       date,
       time,
       note,
       price,
     };
-  
+
     console.log("sessionData:", sessionData);
-  
+
     try {
-      const res = await axios.post("http://localhost:3500/session/", sessionData);
-  
+      const res = await axios.post("https://zahrabackend.onrender.com/session/", sessionData);
+
       if (res.status === 201 || res.status === 200) {
         alert("تم إرسال طلب الحصة بنجاح!");
         setDate("");
@@ -107,7 +107,7 @@ const Detail = () => {
       alert("فشل في إرسال طلب الحصة.");
     }
   };
-  
+
   return (
     <div className="detail" style={{ direction: "rtl", textAlign: "right" }}>
       <div className="userInfo">
@@ -152,16 +152,16 @@ const Detail = () => {
                 <div className="photoItem" key={img._id || i}>
                   <div className="photoDetail">
                     <img
-                      src={`http://localhost:3500${img.imageUrl}`}
+                      src={`https://zahrabackend.onrender.com${img.imageUrl}`}
                       alt={`img-${i}`}
                       onClick={() =>
-                        window.open(`http://localhost:3500${img.imageUrl}`, "_blank")
+                        window.open(`https://zahrabackend.onrender.com${img.imageUrl}`, "_blank")
                       }
                       style={{ cursor: "pointer" }}
                     />
                     <span>{img.imageUrl.split("/").pop()}</span>
                   </div>
-                  <a href={`http://localhost:3500${img.imageUrl}`} download>
+                  <a href={`https://zahrabackend.onrender.com${img.imageUrl}`} download>
                     <img src="./download.png" className="icon" alt="تحميل" />
                   </a>
                 </div>
