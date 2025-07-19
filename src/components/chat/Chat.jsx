@@ -44,7 +44,6 @@ const Chat = () => {
     socket.on("newMessage", handleIncomingMessage);
     return () => socket.off("newMessage", handleIncomingMessage);
   }, [socket, userId, conversationId, isGroup, groupId]);
-
   useEffect(() => {
     const fetchAllMessages = async () => {
       if (!userId || !conversationId) return;
@@ -54,15 +53,24 @@ const Chat = () => {
           const res = await axios.get(
             `https://zahrabackend.onrender.com/message/messages/group/${conversationId}`
           );
-          const sorted = (res.data?.messages || []).sort(
-            (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-          );
+          const sorted = (res.data?.messages || [])
+            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+            .map((msg) => ({
+              ...msg,
+              text: msg.text || msg.message || "",
+            }));
           setMessages(sorted);
         } else {
           const [textRes, audioRes, imageRes] = await Promise.all([
-            axios.get(`https://zahrabackend.onrender.com/message/conversation/${userId}/${conversationId}`),
-            axios.get(`https://zahrabackend.onrender.com/message/messages/audio/${userId}/${conversationId}`),
-            axios.get(`https://zahrabackend.onrender.com/message/messages/image/${userId}/${conversationId}`),
+            axios.get(
+              `https://zahrabackend.onrender.com/message/conversation/${userId}/${conversationId}`
+            ),
+            axios.get(
+              `https://zahrabackend.onrender.com/message/messages/audio/${userId}/${conversationId}`
+            ),
+            axios.get(
+              `https://zahrabackend.onrender.com/message/messages/image/${userId}/${conversationId}`
+            ),
           ]);
 
           const audioMessages = Array.isArray(audioRes.data.messages)
@@ -78,8 +86,15 @@ const Chat = () => {
           ];
 
           const uniqueSorted = combined
-            .filter((msg, index, self) => index === self.findIndex((m) => m._id === msg._id))
-            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            .filter(
+              (msg, index, self) =>
+                index === self.findIndex((m) => m._id === msg._id)
+            )
+            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+            .map((msg) => ({
+              ...msg,
+              text: msg.text || msg.message || "",
+            }));
 
           setMessages(uniqueSorted);
         }
@@ -99,20 +114,18 @@ const Chat = () => {
   
     const messageData = {
       senderId: userId,
-      message: text,
+      text,
+      type: "text",
       devMode: true,
       ...(isGroup ? { groupId: conversationId } : { receiverId: conversationId }),
     };
   
     try {
-      await axios.post("https://zahrabackend.onrender.com/message/send", messageData);
-      setMessages((prev) => [
-        ...prev,
-        {
-          ...messageData,
-          timestamp: new Date().toISOString(), // Add timestamp locally for instant UI update
-        },
-      ]);
+      const res = await axios.post("https://zahrabackend.onrender.com/message/send", messageData);
+  
+      // ✅ نضيف الرسالة كما أرجعها الـ backend (بها _id و timestamp)
+      setMessages((prev) => [...prev, res.data.message]);
+  
       setText("");
     } catch (err) {
       const errorMessage = err?.response?.data?.error || "فشل في إرسال الرسالة.";
@@ -124,6 +137,7 @@ const Chat = () => {
       console.error("خطأ في إرسال الرسالة:", err);
     }
   };
+  
   
   const handleDeleteImageMessage = async (messageId) => {
     try {
@@ -149,6 +163,7 @@ const Chat = () => {
     formData.append("image", file);
     formData.append("senderId", userId);
     formData.append("timestamp", new Date().toISOString());
+    formData.append("devMode", "true");
 
     if (isGroup) {
       formData.append("groupId", conversationId);
@@ -187,6 +202,7 @@ const Chat = () => {
         formData.append("audio", audioBlob);
         formData.append("senderId", userId);
         formData.append("timestamp", new Date().toISOString());
+        formData.append("devMode", "true");
 
         if (isGroup) {
           formData.append("groupId", conversationId);
@@ -253,8 +269,8 @@ const Chat = () => {
 
       <div className="center">
         {messages
-          .filter((msg) => msg && (msg.message || msg.audioUrl || msg.imageUrl))
-          .map((msg, i) => (
+  .filter((msg) => msg && (msg.text || msg.message || msg.audioUrl || msg.imageUrl))
+ .map((msg, i) => (
             <div className={`message ${msg.senderId === userId ? "own" : ""}`} key={msg._id || i}>
               <div className="texts">
                 {msg.senderId !== userId && (
@@ -286,7 +302,8 @@ const Chat = () => {
   </div>
 )}
 
-                {msg.message && <p>{msg.message}</p>}
+{msg.text && <p>{msg.text}</p>}
+{msg.message && !msg.text && <p>{msg.message}</p>}
                 {msg.audioUrl && (
                   <div className="voice-player">
                     <audio controls>
